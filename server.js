@@ -8,6 +8,7 @@ require('dotenv/config')
 const PORT = process.env.PORT || 5000
 
 var usersRouter = require('./routes/users');
+var postsRouter = require('./routes/posts');
 
 
 // view engine setup
@@ -20,6 +21,7 @@ app.use(methodOverride('_method'))
 
 
 app.use('/users', usersRouter);
+app.use('/posts', postsRouter);
 
 
 // error handler

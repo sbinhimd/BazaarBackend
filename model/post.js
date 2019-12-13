@@ -8,6 +8,7 @@ const postSchema  = new Schema({
         type: String
     },
     description:{
+        default: "",
         required: false , 
         type: String
     },
@@ -16,14 +17,15 @@ const postSchema  = new Schema({
         type: String
     },
     price:{
-        required: false , 
+        required: Number , 
         type: String
     },
      startingbid:{
-        required: false , 
+        required: Number , 
         type: String
     },
     city:{
+        default: "",
         required: false , 
         type: String
     }, 

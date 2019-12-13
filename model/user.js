@@ -3,10 +3,12 @@ const Schema = mongoose.Schema
 
 const userSchema  = new Schema({
     firstname:{
+        default: "",
         required : false , 
         type: String
     },
     lastname:{
+        default: "",
         required : false , 
         type: String
     },
@@ -19,10 +21,12 @@ const userSchema  = new Schema({
         type: String
     },
     description:{
+        default: "",
         required: false , 
         type: String
     },
     profileimg:{
+        default: "",
         required: false , 
         type: String
     },
@@ -35,10 +39,12 @@ const userSchema  = new Schema({
         type: String
     },
     city:{
+        default: "",
         required: false , 
         type: String
     },
     Rating:{
+        default: 5,
         required: false , 
         type: Number
     },

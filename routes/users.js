@@ -64,8 +64,20 @@ router.get('/:id', async(req, res, next) =>{
 });
 
 /* edit user . */
-router.put('/edit/:token', function(req, res, next) {
-  res.send('respond with a resource');
+router.put('/:token', function(req, res, next) {
+
+  user = {
+  "firstname": req.body.firstname,
+  "lastname": req.body.lastname,
+  "description" : req.body.description,
+  "profileimg" : req.body.profileimg ,
+  "city" : req.body.city}
+  var decoded = jwt.verify(req.params.token, 'secret')
+    
+  User.findByIdAndUpdate(decoded.user._id,user)
+     .then(() => res.json({msg :`the user has been updated ` }))
+     .catch(err => res.send(err))
+
 });
 
 /* Delete one user . */
