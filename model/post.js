@@ -1,6 +1,21 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+const commentSchema  = new Schema({
+    
+    description:{
+        required: false , 
+        type: String
+    }
+}, {timestamps: true}
+);
+
+const Comment = mongoose.model('Comment',commentSchema)
+
+
+
+
+
 const postSchema  = new Schema({
     
     title : {
@@ -13,16 +28,17 @@ const postSchema  = new Schema({
         type: String
     },
     postimages:{
+        default: [],
         required: false , 
-        type: String
+        type: Array
     },
     price:{
-        required: Number , 
-        type: String
+        required: false , 
+        type: Number
     },
      startingbid:{
-        required: Number , 
-        type: String
+        required: false , 
+        type: Number
     },
     city:{
         default: "",
@@ -36,10 +52,15 @@ const postSchema  = new Schema({
     isopen:{
         default: false,
         type: Boolean
-    }
+    },
+    comments:[{ 
+        type:Schema.Types.ObjectId,
+        ref:'Comment'
+    }]
 
 }, {timestamps: true}
 );
 
 const Post = mongoose.model('Post',postSchema)
-module.exports = Post
+exports.Post = Post
+exports.Comment = Comment

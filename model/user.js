@@ -14,7 +14,8 @@ const userSchema  = new Schema({
     },
     email : {
         required : true , 
-        type: String
+        type: String,
+        unique:true
     },
     password:{
         required: true , 
@@ -32,11 +33,13 @@ const userSchema  = new Schema({
     },
     phonenumber:{
         required: true , 
-        type: String
+        type: String,
+        unique:true
     },
      username:{
         required: true , 
-        type: String
+        type: String,
+        unique:true
     },
     city:{
         default: "",
@@ -55,6 +58,22 @@ const userSchema  = new Schema({
     isverified:{
         default: false,
         type: Boolean
+    },
+    following:{
+        default: [],
+        type: Array
+    },
+    followers:{
+        default: [],
+        type: Array
+    },
+    purchesedorder:{
+        default: [],
+        type: Array
+    },
+    posts:{
+        default: [],
+        type: Array
     }
 
 }, {timestamps: true}
