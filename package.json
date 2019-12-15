@@ -16,5 +16,21 @@
     "jwt-decode": "^2.2.0",
     "method-override": "^3.0.0",
     "mongoose": "^5.7.12"
-  }
+  },
+  "engines": {
+    "node": "10.16.3"
+  },
+  "description": "",
+  "main": "server.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sbinhimd/BazaarBackend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sbinhimd/BazaarBackend/issues"
+  },
+  "homepage": "https://github.com/sbinhimd/BazaarBackend#readme"
 }
