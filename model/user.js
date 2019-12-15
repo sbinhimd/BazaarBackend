@@ -78,8 +78,11 @@ const userSchema  = new Schema({
     comments:[{ 
         type:Schema.Types.ObjectId,
         ref:'Comment'
+    }],
+    watchlater:[{ 
+        type:Schema.Types.ObjectId,
+        ref:'Post'
     }]
-
 }, {timestamps: true}
 );
 

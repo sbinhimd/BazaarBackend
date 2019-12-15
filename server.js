@@ -22,8 +22,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(methodOverride('_method'))
 
 
+
 app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
+
 
 
 // error handler
@@ -44,6 +46,8 @@ mongoose.connect(
     console.log(`connect tho mongoDB`);
   }
 );
+
+
 
 app.listen(PORT, () => console.log(` server running on port ${PORT}`))
 

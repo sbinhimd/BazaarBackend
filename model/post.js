@@ -36,6 +36,10 @@ const postSchema  = new Schema({
         required: false , 
         type: Number
     },
+    quantity:{
+        required: true , 
+        type: Number
+    },
      startingbid:{
         required: false , 
         type: Number
@@ -56,6 +60,10 @@ const postSchema  = new Schema({
     comments:[{ 
         type:Schema.Types.ObjectId,
         ref:'Comment'
+    }],
+    buyer:[{ 
+        type:Schema.Types.ObjectId,
+        ref:'User'
     }]
 
 }, {timestamps: true}

@@ -6,12 +6,12 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "ejs": "~2.6.1",
     "axios": "^0.19.0",
     "bcrypt": "^3.0.7",
     "bootstrap": "^4.3.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "ejs": "~2.6.1",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^2.2.0",
