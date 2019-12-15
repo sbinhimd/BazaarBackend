@@ -9,7 +9,7 @@ process.env.SECRET_KEY = 'secret'
 /* GET all users . */
 router.get('/', async(req, res, next) =>{
   try {
-    var result = await User.find();
+    var result = await User.find().populate('following','firstname lastname profileimg Rating').populate('followers','firstname lastname profileimg Rating');
     res.send({result});
 } catch (error) {
     res.send({error})
@@ -112,6 +112,37 @@ router.post('/login' , (req , res)=>{
       }
   }).catch(err => res.send(err))
 })
+
+/* follow user . */
+router.post('/:followid/:token', async(req, res, next) =>{
+    try {
+        var decoded = jwt.verify(req.params.token, 'secret')
+        if (decoded) {
+           var myUserId = decoded.user._id
+           var followid = req.params.followid
+
+            //add to myUser following
+          var myUser = await User.findById(myUserId)
+            myUser.following.push(followid)
+            myUser.save()
+
+           //add to user followers
+           var user = await User.findById(followid)
+           user.followers.push(myUserId)
+           user.save()
+
+            res.json({myUser:myUser,user:user});
+
+        }
+
+      
+  } catch (error) {
+     
+      res.json({error})
+  }
+  });
+
+  
 
 
 

@@ -59,22 +59,26 @@ const userSchema  = new Schema({
         default: false,
         type: Boolean
     },
-    following:{
-        default: [],
-        type: Array
-    },
-    followers:{
-        default: [],
-        type: Array
-    },
-    purchesedorder:{
-        default: [],
-        type: Array
-    },
-    posts:{
-        default: [],
-        type: Array
-    }
+    following:[{ 
+        type:Schema.Types.ObjectId,
+        ref:'User'
+    }],
+    followers:[{ 
+        type:Schema.Types.ObjectId,
+        ref:'User'
+    }],
+    purchesedorder:[{ 
+        type:Schema.Types.ObjectId,
+        ref:'Post'
+    }],
+    posts:[{ 
+        type:Schema.Types.ObjectId,
+        ref:'Post'
+    }],
+    comments:[{ 
+        type:Schema.Types.ObjectId,
+        ref:'Comment'
+    }]
 
 }, {timestamps: true}
 );

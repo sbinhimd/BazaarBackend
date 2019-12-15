@@ -6,6 +6,10 @@ const jwt = require('jsonwebtoken');
 
 process.env.SECRET_KEY = 'secret'
 
+   ////////////
+  //  Post  //
+  ////////////
+
 /* GET all posts . */
 router.get('/', async(req, res, next) =>{
   try {

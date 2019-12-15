@@ -15,6 +15,8 @@ var postsRouter = require('./routes/posts');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+mongoose.set('useCreateIndex', true);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(methodOverride('_method'))
