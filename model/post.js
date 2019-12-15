@@ -6,6 +6,16 @@ const commentSchema  = new Schema({
     description:{
         required: false , 
         type: String
+    },
+    user:{
+        required: true , 
+        type:Schema.Types.ObjectId,
+        ref:'User'
+    },
+    post:{
+        required: true , 
+        type:Schema.Types.ObjectId,
+        ref:'Post'
     }
 }, {timestamps: true}
 );

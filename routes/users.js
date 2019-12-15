@@ -9,7 +9,7 @@ process.env.SECRET_KEY = 'secret'
 /* GET all users . */
 router.get('/', async(req, res, next) =>{
   try {
-    var result = await User.find().populate('following','firstname lastname profileimg Rating').populate('followers','firstname lastname profileimg Rating').populate('purchesedorder','description postimages city').populate('posts').populate('comments');
+    var result = await User.find().populate('following','firstname lastname profileimg Rating').populate('followers','firstname lastname profileimg Rating').populate('purchesedorder','description postimages city').populate('posts').populate('comments').populate('watchlater','title description postimages city');
     res.send({result});
 } catch (error) {
     res.send({error})
@@ -56,7 +56,7 @@ User.findOne({email: req.body.email})
 /* GET one user . */
 router.get('/:id', async(req, res, next) =>{
   try {
-    var result = await User.findById(req.params.id).populate('following','firstname lastname profileimg Rating').populate('followers','firstname lastname profileimg Rating').populate('purchesedorder','description postimages city').populate('posts').populate('comments');
+    var result = await User.findById(req.params.id).populate('following','firstname lastname profileimg Rating').populate('followers','firstname lastname profileimg Rating').populate('purchesedorder','description postimages city').populate('posts').populate('comments').populate('watchlater','title description postimages city');
     res.send({result});
 } catch (error) {
     res.send({error})

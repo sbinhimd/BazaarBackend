@@ -138,20 +138,54 @@ router.post('/:id/buy/:token', async(req, res, next) =>{
       
   });
 
+
+/* watch post later  . */
+  router.post('/:id/watchlater/:token', async(req, res, next) =>{
+   try {
+    var decoded = jwt.verify(req.params.token, 'secret')
+  
+    if(decoded){
+       
+             postId = req.params.id
+             myUserId = decoded.user._id
+  
+             var watchlater = await Post.findById(postId)
+  
+              //add post to user watch later 
+              var myUser = await User.findById(myUserId)
+              myUser.watchlater.push(watchlater._id)
+              myUser.save()
+              
+             res.json({msg:"post added to watch later"})
+
+    }
+   } catch (error) {
+       res.json({error:error})
+   }
+    
+    
+    });
+
+
+
    ////////////
   // Comment //
   ////////////
 
   /* create new comment . */
 router.post('/:id/:token', async(req, res, next) =>{
+
+var decoded = jwt.verify(req.params.token, 'secret')
    try{ 
 
      var resultPost =  await Post.findById(req.params.id)
        const newComment = {
-        description:req.body.description
+        description:req.body.description,
+         user: decoded.user._id  ,
+         post: req.params.id
   }
   
-  var decoded = jwt.verify(req.params.token, 'secret')
+  
 
   if(decoded){
       await Comment.create(newComment)
