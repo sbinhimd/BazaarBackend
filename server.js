@@ -23,6 +23,11 @@ app.use(methodOverride('_method'))
 app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
 
+app.get('/', async(req, res, next) =>{
+ res.send("Hello To Bazaar Backend")
+});
+
+
 
 
 // error handler
