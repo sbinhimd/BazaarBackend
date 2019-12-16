@@ -47,7 +47,7 @@ User.findOne({email: req.body.email})
             .catch(err =>res.send(err))
         })
     }else{
-        res.send(`email used !!! change the email`)
+        res.json({msg:`email used !!! change the email`})
     }
 
 }).catch(err => res.send(err))
@@ -71,7 +71,8 @@ router.put('/:token', function(req, res, next) {
   "lastname": req.body.lastname,
   "description" : req.body.description,
   "profileimg" : req.body.profileimg ,
-  "city" : req.body.city}
+  "city" : req.body.city
+}
   var decoded = jwt.verify(req.params.token, 'secret')
     
   User.findByIdAndUpdate(decoded.user._id,user)
@@ -104,11 +105,11 @@ router.post('/login' , (req , res)=>{
 
           //if password is NOT the same 
           else{
-              res.json({error: "Password is NOT correct"}).status(401)
+              res.json({msg: "Password or email is NOT correct"}).status(401)
           }
       }
       else{
-          res.send("email is NOT found").status(201)
+          res.json({msg:"Password or email is NOT correct"}).status(201)
       }
   }).catch(err => res.send(err))
 })

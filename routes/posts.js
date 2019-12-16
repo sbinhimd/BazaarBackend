@@ -40,15 +40,21 @@ router.post('/:token', async(req, res, next) =>{
   if(decoded){
 
     try {
-        await Post.create(newPost)
-             
-             var myuserid = decoded.user._id
+        await Post.create(newPost, async(err, comment)=>{
+        
+            var com = comment._id
+    
+            var myuserid = decoded.user._id
              var myuser = await User.findById(myuserid)
-              var com = await Post.findOne({}, {}, { sort: { 'created_at' : -1 } })
-              myuser.posts.push(com._id)
+             
+              myuser.posts.push(com)
               myuser.save()
               
              res.json({msg: 'created successfully',postInf:newPost})
+             
+            })
+             
+             
     } catch (error) {
         res.json(error)
     }
@@ -91,15 +97,21 @@ router.put('/:id/:token', function(req, res, next) {
   
   });
 
-  /* Delete one post . */
-router.delete('/:id/:token', function(req, res, next) {
-
+  /* Delete one post and its comments . */
+router.delete('/:id/:token', async(req, res, next)=> {
+try {
     var decoded = jwt.verify(req.params.token, 'secret')
-      if(decoded){
-          Post.findByIdAndDelete(req.params.id).populate('comments')
-          .then(() => res.json({msg :`the post has been deleted ` }))
-          .catch(err => res.send(err))
-      }
+    if(decoded){
+       await Post.findByIdAndDelete(req.params.id).populate('comments')
+   
+
+        Comment.deleteMany({ post:req.params.id }).then(next)
+        res.json({msg :`the post has been deleted `})
+    } 
+} catch (error) {
+    res.json({error :error})
+}
+    
        
   
   });
@@ -188,18 +200,25 @@ var decoded = jwt.verify(req.params.token, 'secret')
   
 
   if(decoded){
-      await Comment.create(newComment)
-      
-              var myuser = await User.findById(decoded.user._id)
-              var com = await Comment.findOne({}, {}, { sort: { 'created_at' : -1 } })
+      await Comment.create(newComment, async(err, comment)=>{
+        
+        var com = comment._id
+
+        var myuser = await User.findById(decoded.user._id)
               
-            resultPost.comments.push(com._id)
-            resultPost.save()
+              
+        resultPost.comments.push(com)
+        resultPost.save()
 
-            myuser.comments.push(com._id)
-            myuser.save()
+        myuser.comments.push(com)
+        myuser.save()
 
-            res.json({msg:'created successfully',commentInf:newComment})
+        res.json({msg:'created successfully',commentInf:newComment})
+         
+        })
+      
+      
+             
 
              
   }}catch(error){
