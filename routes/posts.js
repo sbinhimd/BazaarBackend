@@ -5,7 +5,11 @@ const {Comment} = require('../model/post')
 const User = require('../model/user')
 const jwt = require('jsonwebtoken');
 
+const passport = require('passport');
+
 process.env.SECRET_KEY = 'secret'
+
+// var Headertoken = req.headers.authorization.split(' ')[1]
 
    ////////////
   //  Post  //
@@ -13,7 +17,10 @@ process.env.SECRET_KEY = 'secret'
 
 /* GET all posts . */
 router.get('/', async(req, res, next) =>{
+
+    
   try {
+      
     var result = await Post.find().populate('comments').populate('buyer','firstname lastname profileimg city Rating');
     res.send({result});
 } catch (error) {
@@ -22,7 +29,11 @@ router.get('/', async(req, res, next) =>{
 });
 
 /* create new post . */
-router.post('/:token', async(req, res, next) =>{
+router.post('/',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
+
+    var Headertoken = req.headers.authorization.split(' ')[1]
+  var decoded = jwt.verify(Headertoken, 'secret')
+
     const newPost = {
         title : req.body.title ,
         description:req.body.description,
@@ -33,9 +44,9 @@ router.post('/:token', async(req, res, next) =>{
         isapproved:false,
         isopen:false,
         quantity:req.body.quantity,
+        user: decoded.id
   }
   
-  var decoded = jwt.verify(req.params.token, 'secret')
 
   if(decoded){
 
@@ -44,7 +55,8 @@ router.post('/:token', async(req, res, next) =>{
         
             var com = comment._id
     
-            var myuserid = decoded.user._id
+            var myuserid = decoded.id
+            
              var myuser = await User.findById(myuserid)
              
               myuser.posts.push(com)
@@ -75,7 +87,7 @@ router.get('/:id', async(req, res, next) =>{
   });
 
   /* edit post . */
-router.put('/:id/:token', function(req, res, next) {
+router.put('/:id',passport.authenticate('jwt', {session: false}), async(req, res, next) => {
 
     
     post = {
@@ -84,30 +96,39 @@ router.put('/:id/:token', function(req, res, next) {
         postimages:req.body.postimages,
         price:req.body.price,
         startingbid:req.body.startingbid,
-        city:req.body.city, }
+        city:req.body.city,
+        quantity:req.body.quantity
+     }
 
-    var decoded = jwt.verify(req.params.token, 'secret')
+        var Headertoken = req.headers.authorization.split(' ')[1]
+    var decoded = jwt.verify(Headertoken, 'secret')
       
-    if(decoded){
+    var findpost = await Post.findById(req.params.id)
+    if(decoded.id == findpost.user || decoded.isadmin ==true ){
          Post.findByIdAndUpdate(req.params.id,post)
        .then(() => res.json({msg :`the post has been updated ` }))
        .catch(err => res.send(err))
+    }else{
+        res.json({msg :`Unauthorized ` } )
     }
    
   
   });
 
   /* Delete one post and its comments . */
-router.delete('/:id/:token', async(req, res, next)=> {
-try {
-    var decoded = jwt.verify(req.params.token, 'secret')
-    if(decoded){
-       await Post.findByIdAndDelete(req.params.id).populate('comments')
-   
+router.delete('/:id',passport.authenticate('jwt', {session: false}), async(req, res, next)=> {
 
+try {
+    var Headertoken = req.headers.authorization.split(' ')[1]
+    var decoded = jwt.verify(Headertoken, 'secret')
+    
+    if(decoded.isadmin == true){
+       await Post.findByIdAndDelete(req.params.id).populate('comments')
         Comment.deleteMany({ post:req.params.id }).then(next)
         res.json({msg :`the post has been deleted `})
-    } 
+    }else{
+        res.json({msg :`only admin can delete `})
+    }
 } catch (error) {
     res.json({error :error})
 }
@@ -118,48 +139,56 @@ try {
 
   
   /* Buy post (order) . */
-router.post('/:id/buy/:token', async(req, res, next) =>{
-   
-  var decoded = jwt.verify(req.params.token, 'secret')
-
-  if(decoded){
-     
-           orderId = req.params.id
-           myUserId = decoded.user._id
-
-           var order = await Post.findById(orderId)
-           if(order.quantity>0){
-            //decrese order quantity
-            order.quantity = order.quantity-1
-            order.buyer.push(myUserId)
-            order.save()
-
-            //add order to user
-            var myUser = await User.findById(myUserId)
-            myUser.purchesedorder.push(order._id)
-            myUser.save()
-            
-           res.json({msg:"buy order regesterd"})
-           }else{
-            res.json({msg:"item is Sold out!"})
-           }
-
-
-  }
+router.post('/:id/buy',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
+    try {
+        var Headertoken = req.headers.authorization.split(' ')[1]
+        var decoded = jwt.verify(Headertoken, 'secret')
+      
+        if(decoded){
+           
+                 orderId = req.params.id
+                 myUserId = decoded.id
+                 
+                 
+                 var order = await Post.findById(orderId)
+                 if(order.quantity>0){
+                     
+                  //decrese order quantity
+                  order.quantity = order.quantity-1
+                  order.buyer.push(myUserId)
+                 await order.save()
+      
+                  //add order to user
+                  var myUser = await User.findById(myUserId)
+                  myUser.purchesedorder.push(order._id)
+                  await myUser.save()
+                  
+                 res.json({msg:"buy order regesterd"})
+                 }else{
+                  res.json({msg:"item is Sold out!"})
+                 }
+      
+      
+        } 
+    } catch (error) {
+        res.json({error:error})
+    }
+    
               
       
   });
 
 
 /* watch post later  . */
-  router.post('/:id/watchlater/:token', async(req, res, next) =>{
+  router.post('/:id/watchlater',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
    try {
-    var decoded = jwt.verify(req.params.token, 'secret')
+    var Headertoken = req.headers.authorization.split(' ')[1]
+    var decoded = jwt.verify(Headertoken, 'secret')
   
     if(decoded){
        
              postId = req.params.id
-             myUserId = decoded.user._id
+             myUserId = decoded.id
   
              var watchlater = await Post.findById(postId)
   
@@ -185,26 +214,24 @@ router.post('/:id/buy/:token', async(req, res, next) =>{
   ////////////
 
   /* create new comment . */
-router.post('/:id/:token', async(req, res, next) =>{
-
-var decoded = jwt.verify(req.params.token, 'secret')
+router.post('/:id',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
+    var Headertoken = req.headers.authorization.split(' ')[1]
+var decoded = jwt.verify(Headertoken, 'secret')
    try{ 
 
      var resultPost =  await Post.findById(req.params.id)
        const newComment = {
         description:req.body.description,
-         user: decoded.user._id  ,
+         user: decoded.id  ,
          post: req.params.id
   }
   
-  
-
   if(decoded){
       await Comment.create(newComment, async(err, comment)=>{
         
         var com = comment._id
 
-        var myuser = await User.findById(decoded.user._id)
+        var myuser = await User.findById(decoded.id)
               
               
         resultPost.comments.push(com)
@@ -229,32 +256,39 @@ var decoded = jwt.verify(req.params.token, 'secret')
   });
 
     /* edit comment . */
-router.put('/:Postid/:Commentid/:token', function(req, res, next) {
+router.put('/:Postid/:Commentid',passport.authenticate('jwt', {session: false}), async(req, res, next)=> {
 
     
     comment = {
         description:req.body.description
     }
 
-    var decoded = jwt.verify(req.params.token, 'secret')
-      
-    if(decoded){
+    var Headertoken = req.headers.authorization.split(' ')[1]
+
+    var decoded = jwt.verify(Headertoken, 'secret')
+    var findcomment = await Comment.findById(req.params.Commentid)
+    if(decoded.id == findcomment.user || decoded.isadmin ==true ){
          Comment.findByIdAndUpdate(req.params.Commentid,comment)
        .then(() => res.json({msg :`the comment has been updated ` }))
        .catch(err => res.send(err))
+    }else{
+        res.json({msg :`Only admin can edit ` })
     }
    
   
   });
 
     /* Delete one comment . */
-router.delete('/:Postid/:Commentid/:token', function(req, res, next) {
+router.delete('/:Postid/:Commentid',passport.authenticate('jwt', {session: false}), function(req, res, next) {
+    var Headertoken = req.headers.authorization.split(' ')[1]
+    var decoded = jwt.verify(Headertoken, 'secret')
 
-    var decoded = jwt.verify(req.params.token, 'secret')
-      if(decoded){
+      if(decoded.isadmin == true){
         Comment.findByIdAndDelete(req.params.Commentid)
           .then(() => res.json({msg :`the comment has been deleted ` }))
           .catch(err => res.send(err))
+      }else{
+        res.json({msg :`only admin can delete` })
       }
        
   

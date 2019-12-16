@@ -3,11 +3,13 @@ var router = express.Router();
 const User = require('../model/user')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const passport = require('passport');
+
 
 process.env.SECRET_KEY = 'secret'
 
 /* GET all users . */
-router.get('/', async(req, res, next) =>{
+router.get('/' ,passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
   try {
     var result = await User.find().populate('following','firstname lastname profileimg Rating').populate('followers','firstname lastname profileimg Rating').populate('purchesedorder','description postimages city').populate('posts').populate('comments').populate('watchlater','title description postimages city');
     res.send({result});
@@ -54,7 +56,7 @@ User.findOne({email: req.body.email})
 });
 
 /* GET one user . */
-router.get('/:id', async(req, res, next) =>{
+router.get('/:id' ,passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
   try {
     var result = await User.findById(req.params.id).populate('following','firstname lastname profileimg Rating').populate('followers','firstname lastname profileimg Rating').populate('purchesedorder','description postimages city').populate('posts').populate('comments').populate('watchlater','title description postimages city');
     res.send({result});
@@ -64,7 +66,7 @@ router.get('/:id', async(req, res, next) =>{
 });
 
 /* edit user . */
-router.put('/:token', function(req, res, next) {
+router.put('/:id',passport.authenticate('jwt', {session: false}), function(req, res, next) {
 
   user = {
   "firstname": req.body.firstname,
@@ -73,53 +75,47 @@ router.put('/:token', function(req, res, next) {
   "profileimg" : req.body.profileimg ,
   "city" : req.body.city
 }
-  var decoded = jwt.verify(req.params.token, 'secret')
-    
-  User.findByIdAndUpdate(decoded.user._id,user)
+var Headertoken = req.headers.authorization.split(' ')[1]
+  var decoded = jwt.verify(Headertoken, 'secret')
+
+if (decoded.id == req.params.id ||decoded.isadmin == true ) {
+    User.findByIdAndUpdate(decoded.id,user)
      .then(() => res.json({msg :`the user has been updated ` }))
      .catch(err => res.send(err))
+}else{
+    res.json({msg :`You must be the same user or the admin to update ` })
+}
+      
+  
+    
+  
 
 });
 
 /* Delete one user . */
-router.delete('/:token', function(req, res, next) {
-  var decoded = jwt.verify(req.params.token, 'secret')
-    
-     User.findByIdAndDelete(decoded.user._id)
+router.delete('/:id',passport.authenticate('jwt', {session: false}), function(req, res, next) {
+    var Headertoken = req.headers.authorization.split(' ')[1]
+  var decoded = jwt.verify(Headertoken, 'secret')
+
+    if (decoded.isadmin == true) {
+        User.findByIdAndDelete(req.params.id)
         .then(() => res.json({msg :`the user has been deleted ` }))
         .catch(err => res.send(err))
+    } else {
+        res.json({msg :`only admin can delete ` })
+    }
+     
 
 });
 
-/* login user . */
-router.post('/login' , (req , res)=>{
-  User.findOne({email: req.body.email})
-  .then(user =>{
-      if(user){
-          if( bcrypt.compareSync(req.body.password , user.password)){
-              user.password = " " //to show empty String in token
-              var payload = {user} // to make the the password Hashed 
-              let token = jwt.sign(payload , process.env.SECRET_KEY , {expiresIn: 1440})
-              res.json({token: token})
-          }
-
-          //if password is NOT the same 
-          else{
-              res.json({msg: "Password or email is NOT correct"}).status(401)
-          }
-      }
-      else{
-          res.json({msg:"Password or email is NOT correct"}).status(201)
-      }
-  }).catch(err => res.send(err))
-})
 
 /* follow user . */
-router.post('/:followid/:token', async(req, res, next) =>{
+router.post('/:followid',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
     try {
-        var decoded = jwt.verify(req.params.token, 'secret')
+        var Headertoken = req.headers.authorization.split(' ')[1]
+        var decoded = jwt.verify(Headertoken, 'secret')
         if (decoded) {
-           var myUserId = decoded.user._id
+           var myUserId = decoded.id
            var followid = req.params.followid
 
             //add to myUser following
@@ -132,7 +128,7 @@ router.post('/:followid/:token', async(req, res, next) =>{
            user.followers.push(myUserId)
            user.save()
 
-            res.json({myUser:myUser,user:user});
+            res.json({msg:"follow Done"});
 
         }
 
@@ -142,9 +138,6 @@ router.post('/:followid/:token', async(req, res, next) =>{
       res.json({error})
   }
   });
-
-
-
 
 
 module.exports = router;

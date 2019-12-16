@@ -74,7 +74,12 @@ const postSchema  = new Schema({
     buyer:[{ 
         type:Schema.Types.ObjectId,
         ref:'User'
-    }]
+    }],
+    user:{
+        required: true , 
+        type:Schema.Types.ObjectId,
+        ref:'User'
+    }
 
 }, {timestamps: true}
 );

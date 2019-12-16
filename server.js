@@ -4,11 +4,19 @@ const path = require("path");
 const mongoose = require("mongoose");
 const cors = require('cors')
 const methodOverride = require('method-override') 
+require('./passport');
+const passport = require('passport'); //(6-auth)
+var bodyParser = require('body-parser')
+
 require('dotenv/config')
+
+
 const PORT = process.env.PORT || 5000
 
 var usersRouter = require('./routes/users');
 var postsRouter = require('./routes/posts');
+var authRouter = require('./routes/auth');
+
 
 app.use(cors())
 
@@ -18,34 +26,28 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(methodOverride('_method'))
 
+// parse application/json
+app.use(bodyParser.json({limit:'20mb'}))
+
+app.use(passport.initialize());
 
 
+//Routes
 app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
+app.use('/auth',authRouter);
 
-app.get('/', async(req, res, next) =>{
+
+//home Route
+app.get('/',async(req, res, next) =>{
  res.send("Hello To Bazaar Backend")
-});
-
-
-
-
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
 });
 
 mongoose.connect(
   process.env.DB_CONNECTION,
   { useNewUrlParser: true, useUnifiedTopology: true },
   () => {
-    console.log(`connect tho mongoDB`);
+    console.log(`Connected to mongoDB`);
   }
 );
 
