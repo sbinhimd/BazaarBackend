@@ -30,7 +30,7 @@ const userSchema  = new Schema({
     profileimg:{
         default: "",
         required: false , 
-        type: Buffer
+        type: String
     },
     phonenumber:{
         required: true , 
