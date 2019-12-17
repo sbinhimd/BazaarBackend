@@ -148,32 +148,30 @@ router.post('/:followid',passport.authenticate('jwt', {session: false}), async(r
 
    /* create new message . */
 router.post('/:id',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
-//   var Headertoken = req.headers.authorization.split(' ')[1]
-// var decoded = jwt.verify(Headertoken, 'secret')
-//  try{ 
+  var Headertoken = req.headers.authorization.split(' ')[1]
+var decoded = jwt.verify(Headertoken, 'secret')
+ try{ 
 
-//  const newMessage = {
-//       user1:decoded.id,
-//        user2: req.params.id,
-//        msg: req.body.msg
-// }
+  var user = await User.findById(decoded.id)
 
-//   var resultMessage =  await Message.find(req.params.id)
+  var allmsg = await Message.find({user1:"bawdw",user2:"snfbdjfb"})
 
+  
+ const newMessage = {
+      user1:decoded.id,
+       user2: req.params.id,
+       msg: req.body.msg
+}
 
-//   if (resultUser.msg.indexOf()) {
-    
-//   } else {
-//     Message.create(newMessage)
-//   }
-    
+  var resultMessage =  await Message.find(req.params.id)
 
 
-
-
-// }catch(error){
-//     res.json({err:error})
-// }
+ 
+    Message.create(newMessage)
+ 
+}catch(error){
+    res.json({err:error})
+}
             
     
 });

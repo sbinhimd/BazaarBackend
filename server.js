@@ -22,7 +22,6 @@ app.use(cors())
 
 mongoose.set('useCreateIndex', true);
 
-// app.use(express.json());
 
 app.use(methodOverride('_method'))
 

@@ -21,7 +21,7 @@ router.post('/login', function (req, res, next) {
             if (err) {
                 res.send(err);
             }
-            let userData = { id:user._id , isadmin : user.isadmin, isverified: user.isverified }
+            let userData = { id:user._id , isadmin : user.isadmin, isverified: user.isverified, username:user.username }
             const token = jwt.sign(userData,'secret',{expiresIn: 60 * 60});
 
             return res.json({token});

@@ -17,8 +17,7 @@ process.env.SECRET_KEY = 'secret'
 
 /* GET all posts . */
 router.get('/', async(req, res, next) =>{
-
-    
+  
   try {
       
     var result = await Post.find().populate('comments').populate('buyer','firstname lastname profileimg city Rating');
@@ -44,7 +43,8 @@ router.post('/',passport.authenticate('jwt', {session: false}), async(req, res, 
         isapproved:false,
         isopen:false,
         quantity:req.body.quantity,
-        user: decoded.id
+        user: decoded.id,
+        username: decoded.username
   }
   
 
