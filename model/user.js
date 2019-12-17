@@ -83,6 +83,10 @@ const userSchema  = new Schema({
     watchlater:[{ 
         type:Schema.Types.ObjectId,
         ref:'Post'
+    }],
+    msg:[{
+        type:Schema.Types.ObjectId,
+        ref:'Message'
     }]
 }, {timestamps: true}
 );

@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const User = require('../model/user')
+const Message = require('../model/message')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
@@ -138,6 +139,46 @@ router.post('/:followid',passport.authenticate('jwt', {session: false}), async(r
       res.json({error})
   }
   });
+
+
+   /////////////
+  // Messages //
+  /////////////
+
+
+   /* create new message . */
+router.post('/:id',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
+//   var Headertoken = req.headers.authorization.split(' ')[1]
+// var decoded = jwt.verify(Headertoken, 'secret')
+//  try{ 
+
+//  const newMessage = {
+//       user1:decoded.id,
+//        user2: req.params.id,
+//        msg: req.body.msg
+// }
+
+//   var resultMessage =  await Message.find(req.params.id)
+
+
+//   if (resultUser.msg.indexOf()) {
+    
+//   } else {
+//     Message.create(newMessage)
+//   }
+    
+
+
+
+
+// }catch(error){
+//     res.json({err:error})
+// }
+            
+    
+});
+
+
 
 
 module.exports = router;
