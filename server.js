@@ -45,7 +45,7 @@ app.get('/',async(req, res, next) =>{
 });
 
 mongoose.connect(
-  process.env.DB_CONNECTION,
+  'mongodb://localhost/Baz',
   { useNewUrlParser: true, useUnifiedTopology: true },
   () => {
     console.log(`Connected to mongoDB`);
