@@ -12,11 +12,10 @@ const messageSchema  = new Schema({
         type:Schema.Types.ObjectId,
         ref:'User'
     },
-    msg:{ 
-        required:true,
-        type:Array,
-        timestamps: true
-    }
+    msg:[{ 
+        from:String,
+        content:String
+    }]
 }
 );
 
