@@ -22,13 +22,13 @@ app.use(cors())
 
 mongoose.set('useCreateIndex', true);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// app.use(express.json());
+
 app.use(methodOverride('_method'))
 
 // parse
-app.use(express.json({limit: '50gb', extended: true}));
-
+app.use(express.json({limit: '50mb', extended: true}));
+app.use(express.urlencoded({ extended: false }));
 
 app.use(passport.initialize());
 
