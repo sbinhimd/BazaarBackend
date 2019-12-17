@@ -27,8 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(methodOverride('_method'))
 
 // parse
-app.use(bodyParser.json({limit: '50gb', extended: true}))
-app.use(bodyParser.urlencoded({limit: '50gb', extended: true}))
+app.use(express.json({limit: '50gb', extended: true}));
 
 
 app.use(passport.initialize());
