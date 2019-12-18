@@ -113,7 +113,7 @@ router.post('/:id/bid',passport.authenticate('jwt', {session: false}), async(req
                if(order.quantity>0 && req.body.value != null ){
                    
               
-                if (req.body.value>currentbid && req.body.value>order.currentbid) {
+                if (req.body.value>currentbid && req.body.value>order.startingbid) {
                    order.bids.push(bid)
                 await order.save()
   
