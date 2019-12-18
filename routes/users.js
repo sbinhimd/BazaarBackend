@@ -58,7 +58,7 @@ User.findOne({email: req.body.email})
 /* GET one user . */
 router.get('/:id' ,passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
   try {
-    var result = await User.findById(req.params.id).populate('following','firstname lastname username profileimg Rating').populate('followers','firstname lastname username profileimg Rating').populate('purchesedorder','description postimages city').populate('posts').populate('comments').populate('watchlater','title description postimages city').populate('msg');
+    var result = await User.findById(req.params.id).populate('following','firstname lastname username profileimg Rating').populate('followers','firstname lastname username profileimg Rating').populate('purchesedorder','title description postimages city createdAt').populate('posts').populate('comments').populate('watchlater','title description postimages city').populate('msg');
     res.send({result});
 } catch (error) {
     res.send({error})
