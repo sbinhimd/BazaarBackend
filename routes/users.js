@@ -180,6 +180,49 @@ var fuser = await User.findById(decoded.id)
 }
 });
 
+  /* change password (still in progress) . */
+  router.post('/:id/changepassword',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
+
+    try {
+        var Headertoken = req.headers.authorization.split(' ')[1]
+        var decoded = jwt.verify(Headertoken, 'secret')
+  if (req.body.star != null && req.body.review != null ) {
+  
+    if (decoded.id != req.params.id) {
+  
+      var otherUserid = req.params.id
+  
+  var otheruser = await User.findById(otherUserid)
+  var fuser = await User.findById(decoded.id)
+  
+      ratingObj={
+       username:fuser.username,
+       userid:fuser._id,
+       star:req.body.star,
+       review:req.body.review
+      }
+  
+      //add rating to otheruser
+      otheruser.Rating.push(ratingObj)
+      otheruser.save()
+  
+       res.json({msg:"follow Done"});
+  
+   }
+  } else {
+    res.json({msg:"you have to pass star and review"});
+  }
+       
+  
+      
+  } catch (error) {
+     
+      res.json({error})
+  }
+  });
+
+
+
 
    /////////////
   // Messages //

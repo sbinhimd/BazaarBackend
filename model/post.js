@@ -58,6 +58,11 @@ const postSchema  = new Schema({
         required: false , 
         type: Number
     },
+    bids:[{ 
+        userid:String,
+        username:String,
+        value:Number
+    }],
     city:{
         default: "",
         required: false , 

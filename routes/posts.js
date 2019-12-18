@@ -90,6 +90,57 @@ router.get('/:id', async(req, res, next) =>{
   }
   });
 
+   /* Bid post (order) . */
+router.post('/:id/bid',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
+  try {
+      var Headertoken = req.headers.authorization.split(' ')[1]
+      var decoded = jwt.verify(Headertoken, 'secret')
+       orderId = req.params.id
+       myUserId = decoded.id
+
+    var order = await Post.findById(orderId)
+
+      if(decoded.id == order.user){
+         
+               bid = {
+                userid:myUserId,
+                username:decoded.username,
+                value:req.body.value
+               }
+            var currentbid = order.bids[order.bids.length-1].value
+               
+               
+               if(order.quantity>0 && req.body.value != null ){
+                   
+                //decrese order quantity
+                // order.quantity = order.quantity-1
+              
+                if (req.body.value>currentbid) {
+                   order.bids.push(bid)
+                await order.save()
+  
+                
+               res.json({msg:"bid regesterd"})
+                } else {
+                  res.json({msg:"value must be greater than current bid"})
+                }
+                
+               }else{
+                res.json({msg:"item is Sold out!"})
+               }
+    
+    
+      }else{
+        res.json({msg:"you cant bid on your post ! or you have to pass value as number"})
+      } 
+  } catch (error) {
+      res.json({error:error})
+  }
+  
+            
+    
+});
+
   /* edit post . */
 router.put('/:id',passport.authenticate('jwt', {session: false}), async(req, res, next) => {
  var Headertoken = req.headers.authorization.split(' ')[1]
@@ -219,12 +270,13 @@ router.post('/:id/buy',passport.authenticate('jwt', {session: false}), async(req
     try {
      var Headertoken = req.headers.authorization.split(' ')[1]
      var decoded = jwt.verify(Headertoken, 'secret')
+      var postToChange = await Post.findById(postId)
    
-     if(decoded.isadmin ==true){
+     if(decoded.isadmin ==true ||postToChange.user == decoded.id ){
         
               postId = req.params.id
    
-              var postToChange = await Post.findById(postId)
+             
           postToChange.isopen = !(postToChange.isopen)
           postToChange.save()
 
