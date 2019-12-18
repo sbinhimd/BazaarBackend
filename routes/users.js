@@ -251,6 +251,32 @@ bcrypt.genSalt(saltRounds, function (err, salt) {
   });
 
 
+    /* change isverified  . */
+    router.post('/:id/isverified',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
+      try {
+       var Headertoken = req.headers.authorization.split(' ')[1]
+       var decoded = jwt.verify(Headertoken, 'secret')
+        userId = req.params.id
+        var userToChange = await User.findById(userId)
+     
+       if(decoded.isadmin ==true ){
+
+            userToChange.isverified = !(userToChange.isverified)
+            userToChange.save()
+  
+                res.json({msg:"isverified status changed"})
+   
+       }else{
+        res.json({msg:"not Authorized"})
+       }
+      } catch (error) {
+          res.json({error:error})
+      }
+       
+       
+       });
+
+
 
 
 
