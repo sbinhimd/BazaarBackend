@@ -31,7 +31,6 @@ router.post('/', function(req, res, next) {
     phonenumber : req.body.phonenumber,
     username : req.body.username,
     city : req.body.city,
-    Rating : 5,
     isadmin: false,
     isverified: false
 
