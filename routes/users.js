@@ -355,11 +355,15 @@ var user2 = await User.findById(req.params.id)
     
 });
 
-/* GET all message . */
-router.get('/allmsg' ,passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
+/* GET all message for one user . */
+router.get('/:id/allmsg' ,passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
   try {
-    var result = await Message.find();
-    console.log("result",result);
+    var Headertoken = req.headers.authorization.split(' ')[1]
+    var decoded = jwt.verify(Headertoken, 'secret')
+     userId = req.params.id
+     
+     
+    var result = await Message.find().or([{user1:userId},{user2:userId}]);
     
     res.json({result});
 } catch (error) {
