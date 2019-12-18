@@ -88,9 +88,17 @@ router.get('/:id', async(req, res, next) =>{
 
   /* edit post . */
 router.put('/:id',passport.authenticate('jwt', {session: false}), async(req, res, next) => {
+ var Headertoken = req.headers.authorization.split(' ')[1]
+    var decoded = jwt.verify(Headertoken, 'secret')
+    var findpost = await Post.findById(req.params.id)
 
-    
-    post = {
+    if (decoded.isadmin ==true) {
+      post = req.body
+      Post.findByIdAndUpdate(req.params.id,post)
+      .then(() => res.json({msg :`the post has been updated ` }))
+      .catch(err => res.send(err))
+    } else if(decoded.id == findpost.user) {
+      post = {
         title : req.body.title ,
         description:req.body.description,
         postimages:req.body.postimages,
@@ -100,19 +108,14 @@ router.put('/:id',passport.authenticate('jwt', {session: false}), async(req, res
         quantity:req.body.quantity
      }
 
-        var Headertoken = req.headers.authorization.split(' ')[1]
-    var decoded = jwt.verify(Headertoken, 'secret')
-      
-    var findpost = await Post.findById(req.params.id)
-    if(decoded.id == findpost.user || decoded.isadmin ==true ){
-         Post.findByIdAndUpdate(req.params.id,post)
-       .then(() => res.json({msg :`the post has been updated ` }))
-       .catch(err => res.send(err))
+      Post.findByIdAndUpdate(req.params.id,post)
+      .then(() => res.json({msg :`the post has been updated ` }))
+      .catch(err => res.send(err))
     }else{
-        res.json({msg :`Unauthorized ` } )
+      res.json({msg :`Unauthorized ` } )
     }
-   
-  
+
+
   });
 
   /* Delete one post and its comments . */
@@ -206,6 +209,59 @@ router.post('/:id/buy',passport.authenticate('jwt', {session: false}), async(req
     
     
     });
+
+  /* change isopen  . */
+  router.post('/:id/isopen',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
+    try {
+     var Headertoken = req.headers.authorization.split(' ')[1]
+     var decoded = jwt.verify(Headertoken, 'secret')
+   
+     if(decoded.isadmin ==true){
+        
+              postId = req.params.id
+   
+              var postToChange = await Post.findById(postId)
+          postToChange.isopen = !(postToChange.isopen)
+          postToChange.save()
+
+              res.json({msg:"isopen status changed"})
+ 
+     }else{
+      res.json({msg:"not Authorized"})
+     }
+    } catch (error) {
+        res.json({error:error})
+    }
+     
+     
+     });
+
+     /* change isapproved  . */
+  router.post('/:id/isapproved',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
+    try {
+     var Headertoken = req.headers.authorization.split(' ')[1]
+     var decoded = jwt.verify(Headertoken, 'secret')
+   
+     if(decoded.isadmin ==true){
+        
+              postId = req.params.id
+   
+              var postToChange = await Post.findById(postId)
+          postToChange.isapproved = !(postToChange.isapproved)
+          postToChange.save()
+
+              res.json({msg:"isapproved status changed"})
+ 
+     }else{
+      res.json({msg:"not Authorized"})
+     }
+    } catch (error) {
+        res.json({error:error})
+    }
+     
+     
+     });
+
 
 
 
