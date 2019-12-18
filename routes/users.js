@@ -180,37 +180,66 @@ var fuser = await User.findById(decoded.id)
 }
 });
 
-  /* change password (still in progress) . */
+  /* change password . */
   router.post('/:id/changepassword',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
 
     try {
         var Headertoken = req.headers.authorization.split(' ')[1]
         var decoded = jwt.verify(Headertoken, 'secret')
-  if (req.body.star != null && req.body.review != null ) {
+
+  if (req.body.newpassword != null && req.body.password != null) {
   
-    if (decoded.id != req.params.id) {
+    if (decoded.id == req.params.id || decoded.isadmin == true) {
   
-      var otherUserid = req.params.id
   
-  var otheruser = await User.findById(otherUserid)
+
   var fuser = await User.findById(decoded.id)
   
-      ratingObj={
-       username:fuser.username,
-       userid:fuser._id,
-       star:req.body.star,
-       review:req.body.review
+     
+//inputs
+const userCurrentPassword = req.body.password
+const hash = fuser.password
+const userNewPassword = req.body.newpassword
+
+
+
+ //confirm password
+bcrypt.compare(userCurrentPassword, hash, function(err, isMatch) {
+  if (err) {
+    throw err
+  } else if (!isMatch) {
+    res.json({"msg":"Password doesn't match!"})
+  } else {
+
+    //hashing new password
+    const saltRounds = 10
+ 
+bcrypt.genSalt(saltRounds, function (err, salt) {
+  if (err) {
+    throw err
+  } else {
+    bcrypt.hash(userNewPassword, salt, function(err, hash) {
+      if (err) {
+        throw err
+      } else {
+        fuser.password = hash
+        fuser.save()
+        res.json({"msg":"Password changed"})
       }
+    })
+  }
+})
+
+
+  }
+})
   
-      //add rating to otheruser
-      otheruser.Rating.push(ratingObj)
-      otheruser.save()
   
-       res.json({msg:"follow Done"});
-  
+   }else{
+    res.json({msg:"not Authorized"});
    }
   } else {
-    res.json({msg:"you have to pass star and review"});
+    res.json({msg:"you have to pass new and old password !"});
   }
        
   
