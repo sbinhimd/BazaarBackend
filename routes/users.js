@@ -152,10 +152,11 @@ if (req.body.star != null && req.body.review != null ) {
     var otherUserid = req.params.id
 
 var otheruser = await User.findById(otherUserid)
+var fuser = await User.findById(decoded.id)
 
     ratingObj={
-     username:otheruser.username,
-     userid:otheruser._id,
+     username:fuser.username,
+     userid:fuser._id,
      star:req.body.star,
      review:req.body.review
     }
