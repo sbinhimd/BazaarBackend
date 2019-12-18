@@ -12,6 +12,10 @@ const commentSchema  = new Schema({
         type:Schema.Types.ObjectId,
         ref:'User'
     },
+    username:{
+        type:String,
+        required:true
+    },
     post:{
         required: true , 
         type:Schema.Types.ObjectId,
@@ -83,6 +87,10 @@ const postSchema  = new Schema({
     username:{
         required: true , 
         type: String
+    },
+    views:{
+        type: Number,
+        default:0
     }
 
 }, {timestamps: true}

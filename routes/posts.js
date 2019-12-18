@@ -44,7 +44,8 @@ router.post('/',passport.authenticate('jwt', {session: false}), async(req, res, 
         isopen:false,
         quantity:req.body.quantity,
         user: decoded.id,
-        username: decoded.username
+        username: decoded.username,
+        views:req.body.views
   }
   
 
@@ -80,6 +81,9 @@ router.post('/',passport.authenticate('jwt', {session: false}), async(req, res, 
 router.get('/:id', async(req, res, next) =>{
     try {
       var result = await Post.findById(req.params.id).populate('comments').populate('buyer','firstname lastname profileimg city Rating');
+
+      result.views = result.views + 1
+      result.save()
       res.send({result});
   } catch (error) {
       res.send({error})
@@ -273,12 +277,15 @@ router.post('/:id/buy',passport.authenticate('jwt', {session: false}), async(req
 router.post('/:id',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
     var Headertoken = req.headers.authorization.split(' ')[1]
 var decoded = jwt.verify(Headertoken, 'secret')
+
+
    try{ 
 
      var resultPost =  await Post.findById(req.params.id)
        const newComment = {
         description:req.body.description,
          user: decoded.id  ,
+         username: decoded.username,
          post: req.params.id
   }
   
