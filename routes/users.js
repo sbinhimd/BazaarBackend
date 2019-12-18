@@ -59,7 +59,7 @@ User.findOne({email: req.body.email})
 /* GET one user . */
 router.get('/:id' ,passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
   try {
-    var result = await User.findById(req.params.id).populate('following','firstname lastname profileimg Rating').populate('followers','firstname lastname profileimg Rating').populate('purchesedorder','description postimages city').populate('posts').populate('comments').populate('watchlater','title description postimages city');
+    var result = await User.findById(req.params.id).populate('following','firstname lastname profileimg Rating').populate('followers','firstname lastname profileimg Rating').populate('purchesedorder','description postimages city').populate('posts').populate('comments').populate('watchlater','title description postimages city').populate('msg');
     res.send({result});
 } catch (error) {
     res.send({error})
@@ -139,6 +139,46 @@ router.post('/:followid',passport.authenticate('jwt', {session: false}), async(r
       res.json({error})
   }
   });
+
+  /* Rate user . */
+router.post('/:id/rate',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
+
+  try {
+      var Headertoken = req.headers.authorization.split(' ')[1]
+      var decoded = jwt.verify(Headertoken, 'secret')
+if (req.body.star != null && req.body.review != null ) {
+
+  if (decoded.id != req.params.id) {
+
+    var otherUserid = req.params.id
+
+var otheruser = await User.findById(otherUserid)
+
+    ratingObj={
+     username:otheruser.username,
+     userid:otheruser._id,
+     star:req.body.star,
+     review:req.body.review
+    }
+
+    //add rating to otheruser
+    otheruser.Rating.push(ratingObj)
+    otheruser.save()
+
+     res.json({msg:"follow Done"});
+
+ }
+} else {
+  res.json({msg:"you have to pass star and review"});
+}
+     
+
+    
+} catch (error) {
+   
+    res.json({error})
+}
+});
 
 
    /////////////

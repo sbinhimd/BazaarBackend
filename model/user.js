@@ -47,11 +47,12 @@ const userSchema  = new Schema({
         required: false , 
         type: String
     },
-    Rating:{
-        default: 5,
-        required: false , 
-        type: Number
-    },
+    Rating:[{ 
+        username:String,
+        userid:String,
+        star:Number,
+        review:String
+    }],
     isadmin:{
         default: false,
         type: Boolean
