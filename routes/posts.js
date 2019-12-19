@@ -90,6 +90,17 @@ router.get('/:id', async(req, res, next) =>{
   }
   });
 
+   /* GET one post without view. */
+  router.get('/:id/noview', async(req, res, next) =>{
+    try {
+      var result = await Post.findById(req.params.id).populate('comments').populate('buyer','firstname lastname profileimg city Rating');
+
+      res.send({result});
+  } catch (error) {
+      res.send({error})
+  }
+  });
+
    /* Bid post (order) . */
 router.post('/:id/bid',passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
   try {

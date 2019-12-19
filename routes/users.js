@@ -12,8 +12,16 @@ process.env.SECRET_KEY = 'secret'
 /* GET all users . */
 router.get('/' ,passport.authenticate('jwt', {session: false}), async(req, res, next) =>{
   try {
-    var result = await User.find().populate('following','firstname lastname profileimg Rating').populate('followers','firstname lastname profileimg Rating').populate('purchesedorder','description postimages city').populate('posts').populate('comments').populate('watchlater','title description postimages city').populate('msg');
+    var Headertoken = req.headers.authorization.split(' ')[1]
+  var decoded = jwt.verify(Headertoken, 'secret')
+
+if (decoded.isadmin == true ) {
+   var result = await User.find().populate('following','firstname lastname profileimg Rating').populate('followers','firstname lastname profileimg Rating').populate('purchesedorder','description postimages city').populate('posts').populate('comments').populate('watchlater','title description postimages city').populate('msg');
     res.send({result});
+}else{
+    res.json({msg :`You must be the admin to show all users ` })
+}
+    
 } catch (error) {
     res.send({error})
 }
