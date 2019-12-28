@@ -80,7 +80,13 @@ router.post('/',passport.authenticate('jwt', {session: false}), async(req, res, 
   /* GET one post . */
 router.get('/:id', async(req, res, next) =>{
     try {
-      var result = await Post.findById(req.params.id).populate('comments').populate('buyer','firstname lastname profileimg city Rating');
+      var result = await Post.findById(req.params.id).populate({
+        path : 'comments',
+        populate : {
+          path : 'user',
+          select: 'firstname lastname profileimg'
+        }
+      }).populate('buyer','firstname lastname profileimg city Rating');
 
       result.views = result.views + 1
       result.save()
