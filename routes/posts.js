@@ -116,15 +116,20 @@ router.post('/:id/bid',passport.authenticate('jwt', {session: false}), async(req
        myUserId = decoded.id
 
     var order = await Post.findById(orderId)
-
+    
       if(decoded.id != order.user){
-         
+        
                bid = {
                 userid:myUserId,
                 username:decoded.username,
                 value:req.body.value
                }
-            var currentbid = order.bids[order.bids.length-1].value
+             
+               if (order.bids[order.bids.length] >= 0) {
+                var currentbid = order.bids[order.bids.length-1].value
+               } else {
+                var currentbid = order.startingbid
+               }
                
                
                if(order.quantity>0 && req.body.value != null ){
